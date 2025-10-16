@@ -29,7 +29,7 @@
 
 ```toml
 rclone_path = "<YOUR_RCLONE_PATH>"
-custom_storages = ["<STG_ABS_PATH>",...]
+custom_storages = ["<STG_ABS_PATH>(s)"]
 ```
 
 `rsdish.cabinet.toml`: (运行`rsdish cabinet init`会自动生成，运行`rsdish cabinet join`会生成一个随机membership)
