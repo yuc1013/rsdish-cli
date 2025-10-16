@@ -3,7 +3,7 @@
 [中文](README.md) |
 [English](README_en.md)
 
-[<img src="assets/parfait_gpt.png" width="40%" alt="Parfait logo">](#)
+[<img src="assets/parfait_gpt.png" width="25%" alt="Parfait logo">](#)
 
 [![Rust](https://img.shields.io/badge/rust-1.73+-orange.svg)](https://www.rust-lang.org/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
@@ -21,7 +21,7 @@ A multi-functional sync tool for domestic storages, core functionality relies on
 Add `rsdish` and `rclone` to `PATH`; Or configure `rclone_path` in `rsdish.config.toml`.
 
 ## How it works
-![how_it_works](assets/how_it_works.png)
+[<img src="assets/how_it_works.png" width="40%" alt="How_it_works">](#)
 
 ## Configuration
 
