@@ -3,7 +3,7 @@
 [中文](README.md) |
 [English](README_en.md)
 
-[<img src="assets/parfait_gpt.png" width="40%" alt="Parfait logo">](#)
+[<img src="assets/parfait_gpt.png" width="25%" alt="Parfait logo">](#)
 
 [![Rust](https://img.shields.io/badge/rust-1.73+-orange.svg)](https://www.rust-lang.org/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
