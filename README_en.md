@@ -29,7 +29,7 @@ Add `rsdish` and `rclone` to `PATH`; Or configure `rclone_path` in `rsdish.confi
 
 ```toml
 rclone_path = "<YOUR_RCLONE_PATH>"
-custom_storages = ["<STG_ABS_PATH>",...]
+custom_storages = ["<STG_ABS_PATH>(s)"]
 ```
 
 `rsdish.cabinet.toml`: (run `rsdish cabinet init` to generate, run `rsdish cabinet join` to generate a random membership)
