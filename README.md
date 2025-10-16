@@ -65,3 +65,8 @@ save_level = 0
 ## 注意事项
 
 ⚠️ Windows平台下，`rsdish link`需要管理员权限，或者在Win10中开启开发者模式才能正常运行。
+
+
+## License
+
+This project is licensed under the [GNU General Public License v3.0 (GPLv3)](LICENSE).
