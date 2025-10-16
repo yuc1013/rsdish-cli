@@ -21,7 +21,7 @@
 将`rsdish`和`rclone`均添加到`PATH`；或者在`rsdish.config.toml`中配置`rclone`可执行文件路径。
 
 ## 原理
-![how_it_works](assets/how_it_works.png)
+[<img src="assets/how_it_works.png" width="40%" alt="How_it_works">](#)
 
 ## 配置方法
 
