@@ -49,7 +49,6 @@ pub struct LinkOption {
 pub enum CoverLevel {
     DontCover = 0,
     HigherCover = 1,
-    HigherEqualCover = 2,
     Unknown,
 }
 
@@ -58,7 +57,6 @@ impl From<i32> for CoverLevel {
         match value {
             0 => CoverLevel::DontCover,
             1 => CoverLevel::HigherCover,
-            2 => CoverLevel::HigherEqualCover,
             _ => CoverLevel::Unknown,
         }
     }

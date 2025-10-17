@@ -60,7 +60,7 @@ save_level = 0
 >
 > SaveLevel: 0-DontSave, 1-SaveHigher, 2-SaveHigherEqual, 3-SaveAll
 > 
-> CoverLevel: 0-DontCover, 1-HigherCover, 2-HigherEqualCover
+> CoverLevel: 0-DontCover, 1-HigherCover
 
 ## NOTE
 

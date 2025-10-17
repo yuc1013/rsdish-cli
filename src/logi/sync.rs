@@ -39,9 +39,6 @@ impl Member {
                 Ok(_) => match CoverLevel::from(self.mem_info.mem_conf.dst_option.cover_level) {
                     CoverLevel::DontCover => self.sync_from_leaf(leaf, false),
                     CoverLevel::HigherCover => self.sync_from_leaf(leaf, priority < leaf.priority),
-                    CoverLevel::HigherEqualCover => {
-                        self.sync_from_leaf(leaf, priority <= leaf.priority)
-                    }
                     _ => (),
                 },
                 Err(e) => {
