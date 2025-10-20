@@ -1,5 +1,7 @@
 use crate::logi::{gp::Group, mem::Member};
 
+use std::process::Command;
+
 impl Group {
     pub fn exec(&self, script: &String) {
         self.mems.iter().for_each(|mem| mem.exec(script));
@@ -14,8 +16,6 @@ impl Member {
 
         #[cfg(target_family = "unix")]
         {
-            use std::process::Command;
-
             let status = Command::new("sh")
                 .arg("-c")
                 .arg(script)
