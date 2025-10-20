@@ -63,6 +63,22 @@ impl Member {
         let link_dst_root = &self.mem_info.cab_info.abs_path;
         let target_abs_path = link_dst_root.join(&leaf.file_rel_path);
 
+        let target_folder = match target_abs_path.parent() {
+            Some(p) => p,
+            None => {
+                error!("Failed to get parent of {:?}", target_abs_path);
+                return;
+            }
+        };
+        
+        match fs::create_dir_all(target_folder) {
+            Ok(_) => (),
+            Err(e) => {
+                error!("Failed to create target folder {:?}: {}", target_folder, e);
+                return;
+            },
+        }
+
         match create_symlink(leaf.file_abs_path.as_path(), target_abs_path.as_path()) {
             Ok(_) => (),
             Err(e) => {

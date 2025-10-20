@@ -73,10 +73,18 @@ impl Member {
         let target_folder = match target_abs_path.parent() {
             Some(p) => p,
             None => {
-                error!("Failed to get parent of {}", target_abs_path.display());
+                error!("Failed to get parent of {:?}", target_abs_path);
                 return;
             }
         };
+        
+        match fs::create_dir_all(target_folder) {
+            Ok(_) => (),
+            Err(e) => {
+                error!("Failed to create target folder {:?}: {}", target_folder, e);
+                return;
+            },
+        }
 
         let runtime_params = env::var("RSDISH_RUNTIME_PARAMS").unwrap_or_default();
         let rclone = env::var("RCLONE_PATH").unwrap_or_default();
