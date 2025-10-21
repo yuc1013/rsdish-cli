@@ -39,7 +39,7 @@ impl Member {
                         error!("Failed to read meta {}: {}", target_abs_path.display(), e);
                         continue;
                     }
-                    match SaveLevel::from(self.mem_info.mem_conf.dst_option.save_level) {
+                    match SaveLevel::from(self.mem_info.mem_conf.link_option.save_level) {
                         SaveLevel::DontSave => self.link_from_leaf(leaf, false),
                         SaveLevel::SaveHigher => {
                             self.link_from_leaf(leaf, priority < leaf.priority)
