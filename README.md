@@ -25,14 +25,20 @@
 
 ## 配置方法
 
-`rsdish.config.toml`: (如果rclone_path为空，rsdish默认会尝试直接运行环境中的rclone)
+`rsdish.config.toml`:
+
+> 如果rclone_path为空，rsdish默认会尝试直接运行环境中的rclone。
 
 ```toml
 rclone_path = "<YOUR_RCLONE_PATH>"
 custom_storages = ["<STG_ABS_PATH>(s)"]
 ```
 
-`rsdish.cabinet.toml`: (运行`rsdish cabinet init`会自动生成，运行`rsdish cabinet join`会生成一个随机membership)
+
+
+`rsdish.cabinet.toml`:
+
+> 运行`rsdish cabinet init`以生成一个空的cabinet配置文件，运行`rsdish cabinet join`以生成一个随机的membership。
 
 ```toml
 note = "New Cabinet"
@@ -56,11 +62,22 @@ save_level = 0
 ```
 
 
+
 > Priority: Cabinet rank in a group.
 >
 > SaveLevel: 0-DontSave, 1-SaveHigher, 2-SaveHigherEqual, 3-SaveAll
 > 
 > CoverLevel: 0-DontCover, 1-HigherCover
+
+
+
+`.srcignore`:
+
+> 当且仅当`membership.src_option.enable == true`时有效。
+
+```
+# The syntax of .srcignore is largely the same as that of .gitignore.
+```
 
 ## 注意事项
 

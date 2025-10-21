@@ -25,14 +25,20 @@ Add `rsdish` and `rclone` to `PATH`; Or configure `rclone_path` in `rsdish.confi
 
 ## Configuration
 
-`rsdish.config.toml`: (if rclone_path is empty，rsdish will try rclone in env)
+`rsdish.config.toml`:
+
+> if rclone_path is empty, rsdish will try to run rclone from PATH.
 
 ```toml
 rclone_path = "<YOUR_RCLONE_PATH>"
 custom_storages = ["<STG_ABS_PATH>(s)"]
 ```
 
-`rsdish.cabinet.toml`: (run `rsdish cabinet init` to generate, run `rsdish cabinet join` to generate a random membership)
+
+
+`rsdish.cabinet.toml`:
+
+> run `rsdish cabinet init` to generate an empty config file, run `rsdish cabinet join` to generate a random membership.
 
 ```toml
 note = "New Cabinet"
@@ -61,6 +67,15 @@ save_level = 0
 > SaveLevel: 0-DontSave, 1-SaveHigher, 2-SaveHigherEqual, 3-SaveAll
 > 
 > CoverLevel: 0-DontCover, 1-HigherCover
+
+
+
+`.srcignore`: 
+> valid if and only if `membership.src_option.enable == true.
+
+```ignore
+# The syntax of .srcignore is largely the same as that of .gitignore.
+```
 
 ## NOTE
 

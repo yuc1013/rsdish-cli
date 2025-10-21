@@ -1,8 +1,7 @@
+use ignore::{DirEntry, WalkBuilder};
 use tracing::{error, info};
 
 use std::{collections::BTreeMap, env, fs, path::PathBuf};
-
-use walkdir::WalkDir;
 
 use crate::logi::{gp::Group, mem::Member};
 
@@ -42,7 +41,15 @@ impl VirtualMember {
     pub fn learn(&mut self, src: &Member) {
         let src_root = src.mem_info.cab_info.abs_path.as_path();
 
-        for ent in WalkDir::new(src_root) {
+        let walker = WalkBuilder::new(src_root)
+            .add_custom_ignore_filename(env!("SRC_IGNORE_NAME"))
+            .filter_entry(|ent: &DirEntry| {
+                // default: ignore cabinet config
+                !ent.file_name().to_string_lossy().eq(env!("CABINET_CONFIG_NAME"))
+            })
+            .build();
+
+        for ent in walker {
             let ent = match ent {
                 Ok(t) => t,
                 Err(e) => {
@@ -51,17 +58,6 @@ impl VirtualMember {
                 }
             };
 
-            // special pass
-            if ent.file_name().to_string_lossy() == env!("CABINET_CONFIG_NAME") {
-                continue;
-            }
-
-            // folder pass
-            if ent.file_type().is_dir() {
-                continue;
-            }
-
-            // symlink pass
             let ent_meta = match fs::symlink_metadata(ent.path()) {
                 Ok(t) => t,
                 Err(e) => {
@@ -69,7 +65,14 @@ impl VirtualMember {
                     continue;
                 }
             };
+
+            // symlink pass
             if ent_meta.is_symlink() {
+                continue;
+            }
+
+            // folder pass
+            if ent_meta.is_dir() {
                 continue;
             }
 
