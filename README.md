@@ -1,6 +1,6 @@
 # rsdish
 
-[中文](README.md) |
+[简体中文](README.md) |
 [English](README_en.md)
 
 [<img src="assets/parfait_gpt.png" width="25%" alt="Parfait logo">](#)

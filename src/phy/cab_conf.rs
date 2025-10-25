@@ -14,7 +14,7 @@ pub enum CabinetConfigError {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CabinetConfig {
-    pub note: String,
+    pub note: Option<String>,
     pub memberships: Vec<MemberConfig>,
 }
 
@@ -84,7 +84,7 @@ impl From<i32> for SaveLevel {
 
 pub fn default_cabinet_config() -> CabinetConfig {
     CabinetConfig {
-        note: String::from("New Cabinet"),
+        note: Some(String::from("New Cabinet")),
         memberships: vec![],
     }
 }
