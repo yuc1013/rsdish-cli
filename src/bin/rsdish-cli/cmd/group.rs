@@ -87,8 +87,9 @@ pub fn handle_group_list(args: GroupListArgs) {
                     "├──"
                 };
                 println!(
-                    "{} Member: {:?}",
+                    "{} Note: {:?}, Member: {:?}",
                     prefix,
+                    mem.mem_info.cab_info.cab_conf.note,
                     mem.mem_info.cab_info.abs_path
                 );
             }
