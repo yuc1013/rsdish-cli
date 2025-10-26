@@ -1,5 +1,7 @@
 use std::{fs, io, path::Path};
 
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use tracing::{error, info};
 
 use crate::{
@@ -95,17 +97,50 @@ impl Member {
 }
 
 pub fn create_symlink(original: &Path, link: &Path) -> io::Result<()> {
+    // 1. Generate a pseudo-random suffix using timestamp + process ID
+    let timestamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis();
+    let pid = std::process::id();
+
+    // Construct a temporary link name like "my_link_1234_1698324000000"
+    let tmp_link = link.with_file_name(format!(
+        "{}_{}_{}",
+        link.file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or("link"),
+        pid,
+        timestamp
+    ));
+
+    // 2. Create the temporary symbolic link
     #[cfg(unix)]
     {
-        std::os::unix::fs::symlink(original, link)
+        std::os::unix::fs::symlink(original, &tmp_link)?;
     }
 
     #[cfg(windows)]
     {
         if original.is_dir() {
-            std::os::windows::fs::symlink_dir(original, link)
+            std::os::windows::fs::symlink_dir(original, &tmp_link)?;
         } else {
-            std::os::windows::fs::symlink_file(original, link)
+            std::os::windows::fs::symlink_file(original, &tmp_link)?;
         }
     }
+
+    // 3. Remove the existing link if it already exists
+    if link.exists() {
+        let metadata = fs::symlink_metadata(link)?;
+        if metadata.file_type().is_symlink() {
+            fs::remove_file(link)?;
+        } else if metadata.is_dir() {
+            fs::remove_dir_all(link)?;
+        }
+    }
+
+    // 4. Atomically rename the temporary symlink to the final path
+    fs::rename(&tmp_link, link)?;
+
+    Ok(())
 }
