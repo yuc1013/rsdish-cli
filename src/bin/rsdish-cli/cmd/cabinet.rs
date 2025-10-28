@@ -1,7 +1,7 @@
 use std::{env, fs, path::PathBuf};
 
 use clap::{Args, Subcommand};
-use rsdish::phy::cab_conf::{default_cabinet_config, default_membership, CabinetConfig};
+use rsdish::phy::cab_conf::{CabinetConfig, default_cabinet_config, default_membership};
 
 #[derive(Debug, Args)]
 #[command(about = "Initialization of cabinet, membership management.")]
@@ -42,6 +42,15 @@ pub fn handle_cabinet_init(_args: CabinetInitArgs) {
     let toml_str = toml::to_string(&cab_conf).unwrap();
 
     let config_path: PathBuf = current_dir.join(env!("CABINET_CONFIG_NAME"));
+
+    // Check if config file already exists
+    if config_path.exists() {
+        eprintln!(
+            "Error: config file already exists at {}",
+            config_path.display()
+        );
+        std::process::exit(1);
+    }
 
     fs::write(&config_path, toml_str).unwrap();
 
