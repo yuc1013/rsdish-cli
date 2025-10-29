@@ -12,7 +12,9 @@ pub enum CabinetError {
     #[error(transparent)]
     Io(#[from] io::Error),
     #[error(transparent)]
-    Toml(#[from] toml::de::Error),
+    TomlDe(#[from] toml::de::Error),
+    #[error(transparent)]
+    TomlSer(#[from] toml::ser::Error),
     #[error(transparent)]
     Config(#[from] CabinetConfigError),
 }
@@ -84,4 +86,10 @@ mod tests {
 
         Ok(())
     }
+}
+
+pub fn write_cabinet(cab: &Cabinet) -> Result<(), CabinetError> {
+    let toml_str = toml::to_string(&cab.cab_info.cab_conf)?;
+    fs::write(&cab.cab_info.conf_abs_path, toml_str)?;
+    Ok(())
 }

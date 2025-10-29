@@ -128,3 +128,37 @@ impl CabinetConfig {
         })
     }
 }
+
+impl CabinetConfig {
+    pub fn to_gate(&mut self) {
+        self.memberships.iter_mut().for_each(|m| {
+            m.priority = 0;
+            m.src_option.enable = false;
+            m.dst_option.enable = false;
+            m.link_option.enable = true;
+            m.link_option.save_level = SaveLevel::SaveAll as i32;
+        });
+    }
+
+    pub fn to_main(&mut self) {
+        self.memberships.iter_mut().for_each(|m| {
+            m.priority = 3;
+            m.src_option.enable = true;
+            m.dst_option.enable = true;
+            m.link_option.enable = false;
+            m.dst_option.cover_level = CoverLevel::HigherCover as i32;
+            m.dst_option.save_level = SaveLevel::SaveHigherEqual as i32;
+        });
+    }
+
+    pub fn to_mirror(&mut self) {
+        self.memberships.iter_mut().for_each(|m| {
+            m.priority = 1;
+            m.src_option.enable = true;
+            m.dst_option.enable = true;
+            m.link_option.enable = false;
+            m.dst_option.cover_level = CoverLevel::HigherCover as i32;
+            m.dst_option.save_level = SaveLevel::SaveHigherEqual as i32;
+        });
+    }
+}

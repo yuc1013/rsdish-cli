@@ -8,6 +8,7 @@ use rsdish::user::user_conf::user_conf;
 use crate::cmd::cabinet::{handle_cabinet, CabinetCmd};
 use crate::cmd::config::{handle_config, ConfigCmd};
 use crate::cmd::group::{handle_group, GroupCmd};
+use crate::cmd::preset::{PresetCmd, handle_preset};
 use crate::cmd::storage::{handle_storage, StorageCmd};
 
 // Configures Clap v3-style help menu colors
@@ -35,6 +36,7 @@ pub enum SubcommandEnum {
     #[command(visible_alias = "gp")]
     Group(GroupCmd),
     Config(ConfigCmd),
+    Preset(PresetCmd),
 }
 
 pub fn handle_root(cmd: RootCmd) {
@@ -44,6 +46,7 @@ pub fn handle_root(cmd: RootCmd) {
         SubcommandEnum::Storage(child) => handle_storage(child),
         SubcommandEnum::Group(child) => handle_group(child),
         SubcommandEnum::Config(child) => handle_config(child),
+        SubcommandEnum::Preset(child) => handle_preset(child),
     }
 }
 
