@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, env::{self}};
+use std::{collections::BTreeMap};
 
 use clap::{Args, Subcommand};
 use rsdish::logi::{
