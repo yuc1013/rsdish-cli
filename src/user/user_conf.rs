@@ -6,7 +6,6 @@ use tracing::error;
 
 #[derive(Default, Debug, Serialize, Deserialize)]
 pub struct UserConfig {
-    pub rclone_path: String,
     pub custom_storages: Vec<String>,
 }
 

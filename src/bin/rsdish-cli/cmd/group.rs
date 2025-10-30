@@ -10,7 +10,7 @@ use tracing::{error, info};
 use crate::cmd::storage::{storages};
 
 #[derive(Debug, Args)]
-#[command(about = "Info of groups, sync and link groups.")]
+#[command(about = "Group operations.")]
 pub struct GroupCmd {
     #[command(subcommand)]
     pub subcmd: GroupSubcommand,
@@ -25,20 +25,20 @@ pub enum GroupSubcommand {
 }
 
 #[derive(Debug, Args)]
-#[command(about = "List all scanned groups.")]
+#[command(about = "List scanned groups.")]
 pub struct GroupListArgs {
     #[arg(short, long)]
     pub verbose: bool,
 }
 
 #[derive(Debug, Args)]
-#[command(about = "Sync given groups. snaps: -r '-P', -r '--dry-run'")]
+#[command(about = "Sync given groups.")]
 pub struct GroupSyncArgs {
-    #[arg(short, long, default_value = "")]
-    pub runtime_params: String,
+    #[arg(long)]
+    pub strict: bool,
     #[arg(long)]
     pub all: bool,
-    #[arg(value_name = "uuid(s)")]
+    #[arg(value_name = "group_uuid(s)")]
     pub group_uuids: Vec<String>,
 }
 
@@ -47,7 +47,7 @@ pub struct GroupSyncArgs {
 pub struct GroupLinkArgs {
     #[arg(long)]
     pub all: bool,
-    #[arg(value_name = "uuid(s)")]
+    #[arg(value_name = "group_uuid(s)")]
     pub group_uuids: Vec<String>,
 }
 
@@ -58,7 +58,7 @@ pub struct GroupExecArgs {
     pub script: String,
     #[arg(long)]
     pub all: bool,
-    #[arg(value_name = "uuid(s)")]
+    #[arg(value_name = "group_uuid(s)")]
     pub group_uuids: Vec<String>,
 }
 
@@ -87,9 +87,8 @@ pub fn handle_group_list(args: GroupListArgs) {
                     "├──"
                 };
                 println!(
-                    "{} Note: {:?}, Member: {:?}",
+                    "{} Member: {:?}",
                     prefix,
-                    mem.mem_info.cab_info.cab_conf.note,
                     mem.mem_info.cab_info.abs_path
                 );
             }
@@ -99,13 +98,6 @@ pub fn handle_group_list(args: GroupListArgs) {
 
     for gp in gps {
         println!("{:#?}", gp);
-    }
-}
-
-fn set_env_sync(args: &GroupSyncArgs) {
-    let runtime_params = &args.runtime_params;
-    unsafe {
-        env::set_var("RSDISH_RUNTIME_PARAMS", runtime_params);
     }
 }
 
@@ -129,8 +121,6 @@ fn select_groups<'a>(gp_map: &'a BTreeMap<String, Group>, all: bool, select_uuid
 }
 
 pub fn handle_group_sync(args: GroupSyncArgs) {
-    set_env_sync(&args);
-
     let stgs = storages();
     let gp_map = build_group_map_from_storages(&stgs);
     let select_gps: Vec<&Group> = select_groups(&gp_map, args.all, &args.group_uuids);
@@ -140,7 +130,7 @@ pub fn handle_group_sync(args: GroupSyncArgs) {
 
     for select_gp in select_gps {
         let vmem = build_virtual_member_from_group(select_gp);
-        select_gp.sync_from_vmem(&vmem);
+        select_gp.sync_from_vmem(&vmem, args.strict);
     }
 }
 

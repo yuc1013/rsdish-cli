@@ -14,7 +14,6 @@ pub enum CabinetConfigError {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CabinetConfig {
-    pub note: Option<String>,
     pub memberships: Vec<MemberConfig>,
 }
 
@@ -37,7 +36,6 @@ pub struct DstOption {
     pub enable: bool,
     pub cover_level: i32,
     pub save_level: i32,
-    pub params: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -84,7 +82,6 @@ impl From<i32> for SaveLevel {
 
 pub fn default_cabinet_config() -> CabinetConfig {
     CabinetConfig {
-        note: Some(String::from("New Cabinet")),
         memberships: vec![],
     }
 }
@@ -100,7 +97,6 @@ pub fn default_membership() -> MemberConfig {
             enable: false,
             cover_level: CoverLevel::DontCover as i32,
             save_level: SaveLevel::DontSave as i32,
-            params: String::new(),
         },
         link_option: LinkOption { enable: false, save_level: SaveLevel::DontSave as i32 },
     }
@@ -130,16 +126,6 @@ impl CabinetConfig {
 }
 
 impl CabinetConfig {
-    pub fn to_gate(&mut self) {
-        self.memberships.iter_mut().for_each(|m| {
-            m.priority = 0;
-            m.src_option.enable = false;
-            m.dst_option.enable = false;
-            m.link_option.enable = true;
-            m.link_option.save_level = SaveLevel::SaveAll as i32;
-        });
-    }
-
     pub fn to_main(&mut self) {
         self.memberships.iter_mut().for_each(|m| {
             m.priority = 3;
@@ -159,6 +145,16 @@ impl CabinetConfig {
             m.link_option.enable = false;
             m.dst_option.cover_level = CoverLevel::HigherCover as i32;
             m.dst_option.save_level = SaveLevel::SaveHigherEqual as i32;
+        });
+    }
+
+    pub fn to_gate(&mut self) {
+        self.memberships.iter_mut().for_each(|m| {
+            m.priority = 0;
+            m.src_option.enable = false;
+            m.dst_option.enable = false;
+            m.link_option.enable = true;
+            m.link_option.save_level = SaveLevel::SaveAll as i32;
         });
     }
 }

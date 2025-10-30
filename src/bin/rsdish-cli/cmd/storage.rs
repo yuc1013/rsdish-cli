@@ -64,7 +64,7 @@ pub fn handle_storage_list(args: StorageListArgs) {
                     .iter()
                     .map(|m| m.group_uuid.clone())
                     .collect();
-                println!("{} Cabinet: {:?}, Note: {:?}, Memberships: {:?}", cab_prefix, cab_rel_path, cab.cab_info.cab_conf.note, group_uuids);
+                println!("{} Cabinet: {:?}, Memberships: {:?}", cab_prefix, cab_rel_path, group_uuids);
             }
         }
         return;

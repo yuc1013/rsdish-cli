@@ -1,8 +1,8 @@
 use tracing::{error, info};
 
 use std::{
-    env, fs,
-    process::{Command, Stdio},
+    fs::{self, Metadata},
+    time::SystemTime,
 };
 
 use crate::{
@@ -14,21 +14,44 @@ use crate::{
     phy::cab_conf::{CoverLevel, SaveLevel},
 };
 
+pub fn need_sync(src: &VirtualLeaf, dst_meta: &Metadata, strict: bool) -> bool {
+    if strict {
+        return true;
+    }
+
+    let src_meta = match fs::metadata(&src.file_abs_path) {
+        Ok(m) => m,
+        Err(_) => return false,
+    };
+
+    let src_size = src_meta.len();
+    let dst_size = dst_meta.len();
+
+    let src_mtime = src_meta.modified().unwrap_or(SystemTime::UNIX_EPOCH);
+    let dst_mtime = dst_meta.modified().unwrap_or(SystemTime::UNIX_EPOCH);
+
+    if src_size != dst_size || src_mtime > dst_mtime {
+        true
+    } else {
+        false
+    }
+}
+
 impl Group {
-    pub fn sync_from_vmem(&self, vmem: &VirtualMember) {
+    pub fn sync_from_vmem(&self, vmem: &VirtualMember, strict: bool) {
         let dsts = self
             .mems
             .iter()
             .filter(|mem| mem.mem_info.mem_conf.dst_option.enable);
         dsts.for_each(|dst| {
             info!("run sync for dst {:?}", dst.mem_info.cab_info.abs_path);
-            dst.sync_from_vmem(vmem);
+            dst.sync_from_vmem(vmem, strict);
         });
     }
 }
 
 impl Member {
-    fn sync_from_vmem(&self, vmem: &VirtualMember) {
+    fn sync_from_vmem(&self, vmem: &VirtualMember, strict: bool) {
         let dst_root = self.mem_info.cab_info.abs_path.as_path();
         let priority = self.mem_info.mem_conf.priority;
 
@@ -36,9 +59,12 @@ impl Member {
             let target_abs_path = dst_root.join(leaf.file_rel_path.as_path());
 
             match fs::metadata(&target_abs_path) {
-                Ok(_) => match CoverLevel::from(self.mem_info.mem_conf.dst_option.cover_level) {
+                Ok(t) => match CoverLevel::from(self.mem_info.mem_conf.dst_option.cover_level) {
                     CoverLevel::DontCover => self.sync_from_leaf(leaf, false),
-                    CoverLevel::HigherCover => self.sync_from_leaf(leaf, priority < leaf.priority),
+                    CoverLevel::HigherCover => self.sync_from_leaf(
+                        leaf,
+                        priority < leaf.priority && need_sync(leaf, &t, strict),
+                    ),
                     _ => (),
                 },
                 Err(e) => {
@@ -77,49 +103,28 @@ impl Member {
                 return;
             }
         };
-        
+
         match fs::create_dir_all(target_folder) {
             Ok(_) => (),
             Err(e) => {
                 error!("Failed to create target folder {:?}: {}", target_folder, e);
                 return;
-            },
-        }
-
-        let runtime_params = env::var("RSDISH_RUNTIME_PARAMS").unwrap_or_default();
-        let rclone = env::var("RCLONE_PATH").unwrap_or_default();
-        let rclone = if rclone.is_empty() { "rclone" } else { &rclone };
-
-        // collect parsed args
-        let mut args = vec![
-            "sync".to_string(),
-            leaf.file_abs_path.to_string_lossy().to_string(),
-            target_folder.to_string_lossy().to_string(),
-        ];
-
-        for param_str in [&runtime_params, &self.mem_info.mem_conf.dst_option.params] {
-            if !param_str.is_empty() {
-                if let Ok(mut v) = shell_words::split(param_str) {
-                    args.append(&mut v);
-                }
             }
         }
-        info!("rclone args = {} {}", rclone, args.join(" "));
 
-        let mut child = Command::new(&rclone)
-            .args(&args)
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
-            .spawn()
-            .expect("failed to spawn rclone");
-
-        let status = child.wait().expect("failed to wait on rclone");
-        if !status.success() {
-            error!(
-                "rclone failed for {} with status {}",
-                leaf.file_rel_path.display(),
-                status
-            );
+        match fs::copy(&leaf.file_abs_path, &target_abs_path) {
+            Ok(_) => {
+                info!(
+                    "Synced file {:?} to {:?}",
+                    leaf.file_abs_path, target_abs_path
+                );
+            }
+            Err(e) => {
+                error!(
+                    "Failed to copy file {:?} to {:?}: {}",
+                    leaf.file_abs_path, target_abs_path, e
+                );
+            }
         }
     }
 }

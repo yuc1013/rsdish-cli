@@ -11,10 +11,13 @@ use crate::phy::cab_conf::{CabinetConfig, CabinetConfigError};
 pub enum CabinetError {
     #[error(transparent)]
     Io(#[from] io::Error),
+
     #[error(transparent)]
     TomlDe(#[from] toml::de::Error),
+
     #[error(transparent)]
     TomlSer(#[from] toml::ser::Error),
+    
     #[error(transparent)]
     Config(#[from] CabinetConfigError),
 }
@@ -72,7 +75,6 @@ mod tests {
 
         let cabinet = build_cabinet_from_path(tmp_path)?;
 
-        assert_eq!(cabinet.cab_info.cab_conf.note, test_config.note);
         assert_eq!(
             cabinet.cab_info.cab_conf.memberships.len(),
             test_config.memberships.len()

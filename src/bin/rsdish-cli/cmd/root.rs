@@ -1,15 +1,15 @@
-use std::env;
-
 use clap::{Parser, Subcommand};
 
-use clap::builder::{styling::{AnsiColor, Effects}, Styles};
-use rsdish::user::user_conf::user_conf;
+use clap::builder::{
+    Styles,
+    styling::{AnsiColor, Effects},
+};
 
-use crate::cmd::cabinet::{handle_cabinet, CabinetCmd};
-use crate::cmd::config::{handle_config, ConfigCmd};
-use crate::cmd::group::{handle_group, GroupCmd};
+use crate::cmd::cabinet::{CabinetCmd, handle_cabinet};
+use crate::cmd::config::{ConfigCmd, handle_config};
+use crate::cmd::group::{GroupCmd, handle_group};
 use crate::cmd::preset::{PresetCmd, handle_preset};
-use crate::cmd::storage::{handle_storage, StorageCmd};
+use crate::cmd::storage::{StorageCmd, handle_storage};
 
 // Configures Clap v3-style help menu colors
 const STYLES: Styles = Styles::styled()
@@ -40,19 +40,11 @@ pub enum SubcommandEnum {
 }
 
 pub fn handle_root(cmd: RootCmd) {
-    set_env();
     match cmd.subcmd {
         SubcommandEnum::Cabinet(child) => handle_cabinet(child),
         SubcommandEnum::Storage(child) => handle_storage(child),
         SubcommandEnum::Group(child) => handle_group(child),
         SubcommandEnum::Config(child) => handle_config(child),
         SubcommandEnum::Preset(child) => handle_preset(child),
-    }
-}
-
-fn set_env() {
-    let user_conf = user_conf();
-    unsafe {
-        env::set_var("RCLONE_PATH", user_conf.rclone_path);
     }
 }

@@ -12,31 +12,32 @@ pub struct PresetCmd {
 
 #[derive(Debug, Subcommand)]
 pub enum PresetSubcommand {
-    Gate(PresetGateArgs),
     Main(PresetMainArgs),
     Mirror(PresetMirrorArgs),
+    Gate(PresetGateArgs),
 }
 
 #[derive(Debug, Args)]
-#[command(about = "Gate: only links.")]
-pub struct PresetGateArgs {
-    #[arg(value_name = "cabinet_path(s)")]
-    pub cabinet_paths: Vec<String>,
-}
-
-#[derive(Debug, Args)]
-#[command(about = "Main: actual files.")]
+#[command(about = "priority-3, src-True, dst-True, link-False.")]
 pub struct PresetMainArgs {
     #[arg(value_name = "cabinet_path(s)")]
     pub cabinet_paths: Vec<String>,
 }
 
 #[derive(Debug, Args)]
-#[command(about = "Mirror: mirror of main.")]
+#[command(about = "priority-1, src-True, dst-True, link-False.")]
 pub struct PresetMirrorArgs {
     #[arg(value_name = "cabinet_path(s)")]
     pub cabinet_paths: Vec<String>,
 }
+
+#[derive(Debug, Args)]
+#[command(about = "priority-0, src-False, dst-False, link-True-SaveAll.")]
+pub struct PresetGateArgs {
+    #[arg(value_name = "cabinet_path(s)")]
+    pub cabinet_paths: Vec<String>,
+}
+
 
 pub fn handle_preset(cmd: PresetCmd) {
     match cmd.subcmd {
