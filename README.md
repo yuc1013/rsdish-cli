@@ -8,74 +8,71 @@
 [![Rust](https://img.shields.io/badge/rust-1.73+-orange.svg)](https://www.rust-lang.org/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
-针对家用存储的多功能同步工具，需搭配rclone食用~
+针对家用存储的多功能同步工具。
 
 ## 亮点
-- ⚡️ 只需一行命令即可生成rclone同步脚本；
+- ✅ 备份私人数据，一次设置，永久同步；
 - 🛡️ 针对可能离线的家用硬盘设计；
-- 🔗 进阶：存储库符号链接支持；
-- 🖥️ 跨平台：Linux, Windows, MacOS支持；
+- 🔗 通过符号链接整合散落在各种介质上的数据；
+- 🖥️ Linux, Windows, MacOS支持；
 
 ## 安装
 
-将`rsdish`和`rclone`均添加到`PATH`；或者在`rsdish.config.toml`中配置`rclone`可执行文件路径。
+将`rsdish`添加到`PATH`；
 
 ## 原理
 [<img src="assets/how_it_works.png" width="40%" alt="How_it_works">](#)
 
 ## 配置方法
 
-`rsdish.config.toml`:
-
-> 如果rclone_path为空，rsdish默认会尝试直接运行环境中的rclone。
-
 ```toml
-rclone_path = "<YOUR_RCLONE_PATH>"
+# rsdish.config.toml
+
+# macOS: ~/Library/Application Support/<app>/<config_name>.toml
+# Linux: ~/.config/<app>/<config_name>.toml
+# Windows: %APPDATA%\<app>\<config_name>.toml
+
+# Tip: Run `rsdish config` to print current config path
+
 custom_storages = ["<STG_ABS_PATH>(s)"]
 ```
 
-
-
-`rsdish.cabinet.toml`:
-
-> 运行`rsdish cabinet init`以生成一个空的cabinet配置文件，运行`rsdish cabinet join`以生成一个随机的membership。
-
 ```toml
-note = "New Cabinet"
+# rsdish.cabinet.toml
+
+# For example:
+# Storage_SSD/
+# ├── Cabinet_Book/
+# │   ├── book1.epub
+# │   ├── book2.pdf
+# │   ├── .srcignore
+# │   └── rsdish.cabinet.toml
+# └── Cabinet_Movie/
+#     ├── movie1.mp4
+#     └── rsdish.cabinet.toml
+
+# Tip: Run `rsdish cabinet init` to generate an empty config file;
+# Run `rsdish cabinet join` to generate a random membership.
 
 [[memberships]]
 group_uuid = "0199ebad-44ad-78a2-baad-c56a052e33ac"
-priority = 0
+priority = 0   # Higher number = higher priority (higher can override lower)
 
 [memberships.src_option]
 enable = false
 
 [memberships.dst_option]
 enable = false
-cover_level = 0
-save_level = 0
-params = ""
+cover_level = 0  # Enum: 0=DontCover, 1=HigherCover
+save_level  = 0  # Enum: 0=DontSave, 1=SaveHigher, 2=SaveHigherEqual, 3=SaveAll
 
 [memberships.link_option]
 enable = false
 save_level = 0
 ```
 
-
-
-> Priority: Cabinet rank in a group.
->
-> SaveLevel: 0-DontSave, 1-SaveHigher, 2-SaveHigherEqual, 3-SaveAll
-> 
-> CoverLevel: 0-DontCover, 1-HigherCover
-
-
-
-`.srcignore`:
-
-> 当且仅当`membership.src_option.enable == true`时有效。
-
-```
+```ignore
+# .srcignore
 # The syntax of .srcignore is largely the same as that of .gitignore.
 ```
 
