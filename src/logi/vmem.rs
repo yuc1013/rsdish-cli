@@ -7,6 +7,7 @@ use crate::logi::{gp::Group, mem::Member};
 
 pub struct VirtualMember {
     pub virtual_tree: BTreeMap<PathBuf, VirtualLeaf>,
+    pub highest_priority: i32,
 }
 
 #[derive(Debug, Clone)]
@@ -19,6 +20,7 @@ pub struct VirtualLeaf {
 pub fn build_virtual_member_from_group(gp: &Group) -> VirtualMember {
     let mut vmem = VirtualMember {
         virtual_tree: BTreeMap::new(),
+        highest_priority: 0,
     };
 
     let srcs = gp
@@ -39,6 +41,10 @@ pub fn build_virtual_member_from_group(gp: &Group) -> VirtualMember {
 
 impl VirtualMember {
     pub fn learn(&mut self, src: &Member) {
+        if src.mem_info.mem_conf.priority > self.highest_priority {
+            self.highest_priority = src.mem_info.mem_conf.priority;
+        }
+
         let src_root = src.mem_info.cab_info.abs_path.as_path();
 
         let walker = WalkBuilder::new(src_root)

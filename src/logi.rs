@@ -4,3 +4,4 @@ pub mod vmem;
 pub mod sync;
 pub mod link;
 pub mod exec;
+pub mod clean;

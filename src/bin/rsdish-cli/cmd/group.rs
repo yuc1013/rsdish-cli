@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap};
+use std::{collections::BTreeMap, fs, io::{self, Read}, path::PathBuf};
 
 use clap::{Args, Subcommand};
 use rsdish::logi::{
@@ -7,7 +7,7 @@ use rsdish::logi::{
 };
 use tracing::{error, info};
 
-use crate::cmd::storage::{storages};
+use crate::cmd::storage::storages;
 
 #[derive(Debug, Args)]
 #[command(about = "Group operations.")]
@@ -21,6 +21,7 @@ pub enum GroupSubcommand {
     List(GroupListArgs),
     Sync(GroupSyncArgs),
     Link(GroupLinkArgs),
+    Clean(GroupCleanArgs),
     Exec(GroupExecArgs),
 }
 
@@ -52,10 +53,19 @@ pub struct GroupLinkArgs {
 }
 
 #[derive(Debug, Args)]
+#[command(about = "Clean given groups.")]
+pub struct GroupCleanArgs {
+    #[arg(long)]
+    pub all: bool,
+    #[arg(value_name = "group_uuid(s)")]
+    pub group_uuids: Vec<String>,
+}
+
+#[derive(Debug, Args)]
 #[command(about = "Exec script under each member root.")]
 pub struct GroupExecArgs {
-    #[arg(short, long, value_name = "\'SCRIPT\'")]
-    pub script: String,
+    #[arg(short, long, help = "Script file path, or '-' to read from stdin")]
+    pub input: PathBuf,
     #[arg(long)]
     pub all: bool,
     #[arg(value_name = "group_uuid(s)")]
@@ -67,6 +77,7 @@ pub fn handle_group(cmd: GroupCmd) {
         GroupSubcommand::List(child) => handle_group_list(child),
         GroupSubcommand::Sync(child) => handle_group_sync(child),
         GroupSubcommand::Link(child) => handle_group_link(child),
+        GroupSubcommand::Clean(child) => handle_group_clean(child),
         GroupSubcommand::Exec(child) => handle_group_exec(child),
     }
 }
@@ -86,11 +97,7 @@ pub fn handle_group_list(args: GroupListArgs) {
                 } else {
                     "├──"
                 };
-                println!(
-                    "{} Member: {:?}",
-                    prefix,
-                    mem.mem_info.cab_info.abs_path
-                );
+                println!("{} Member: {:?}", prefix, mem.mem_info.cab_info.abs_path);
             }
         }
         return;
@@ -101,7 +108,11 @@ pub fn handle_group_list(args: GroupListArgs) {
     }
 }
 
-fn select_groups<'a>(gp_map: &'a BTreeMap<String, Group>, all: bool, select_uuids: &Vec<String>) -> Vec<&'a Group> {
+fn select_groups<'a>(
+    gp_map: &'a BTreeMap<String, Group>,
+    all: bool,
+    select_uuids: &Vec<String>,
+) -> Vec<&'a Group> {
     let select_gps: Vec<&Group> = if !all {
         select_uuids
             .iter()
@@ -148,10 +159,35 @@ pub fn handle_group_link(args: GroupLinkArgs) {
     }
 }
 
-pub fn handle_group_exec(args: GroupExecArgs) {
+pub fn handle_group_clean(args: GroupCleanArgs) {
     let stgs = storages();
     let gp_map = build_group_map_from_storages(&stgs);
     let select_gps: Vec<&Group> = select_groups(&gp_map, args.all, &args.group_uuids);
 
-    select_gps.iter().for_each(|g| g.exec(&args.script));
+    let link_target_uuids: Vec<_> = select_gps.iter().map(|g| &g.gp_info.gp_uuid).collect();
+    info!("run clean for groups {:?}", link_target_uuids);
+
+    for select_gp in select_gps {
+        let vmem = build_virtual_member_from_group(select_gp);
+        select_gp.clean_from_vmem(&vmem);
+    }
+}
+
+fn read_input(input: &PathBuf) -> io::Result<String> {
+    if input.as_os_str() == "-" {
+        let mut buf = String::new();
+        io::stdin().read_to_string(&mut buf)?;
+        Ok(buf)
+    } else {
+        fs::read_to_string(input)
+    }
+}
+
+pub fn handle_group_exec(args: GroupExecArgs) {
+    let stgs = storages();
+    let gp_map = build_group_map_from_storages(&stgs);
+    let select_gps: Vec<&Group> = select_groups(&gp_map, args.all, &args.group_uuids);
+    let script = read_input(&args.input).unwrap();
+
+    select_gps.iter().for_each(|g| g.exec(&script));
 }

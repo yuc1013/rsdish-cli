@@ -3,6 +3,7 @@ name = "rsdish"
 version = "0.1.0"
 edition = "2024"
 build = "build.rs"
+repository = "https://github.com/yuc1013/rsdish-cli"
 
 [[bin]]
 name = "rsdish"
@@ -23,3 +24,8 @@ toml = "0.9.8"
 tracing = "0.1.41"
 tracing-subscriber = "0.3.20"
 uuid = { version = "1.18.1", features = ["v7"] }
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
