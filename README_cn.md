@@ -1,29 +1,32 @@
-# rsdish
+<h4 align="right"><a href="README.md">English</a> | 简体中文</h4>
 
-[简体中文](README.md) |
-[English](README_en.md)
+<p align="center">
+  <a href="https://github.com/yuc1013/rsdish-cli" target="_blank"><img src="assets/parfait_gpt.png" width="100" /></a>
+  <h1 align="center">rsdish</h1>
+  <div align="center">
+    <a href="LICENSE" target="_blank">
+      <img alt="GNU General Public License v3.0" src="https://img.shields.io/badge/License-GPLv3-blue.svg">
+    </a>
+  </div>
+  <div align="center">针对家用存储的多功能同步工具。</div>
+</p>
 
-[<img src="assets/parfait_gpt.png" width="25%" alt="Parfait logo">](#)
+针对家用存储的多功能同步工具。
 
-[![Rust](https://img.shields.io/badge/rust-1.73+-orange.svg)](https://www.rust-lang.org/)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+## 亮点
+- ✅ 备份私人数据，一次设置，永久同步；
+- 🛡️ 针对可能离线的家用硬盘设计；
+- 🔗 通过符号链接整合散落在各种介质上的数据；
+- 🖥️ Linux, Windows, MacOS支持；
 
-A multi-functional sync tool for domestic storages.
+## 安装
 
-## Highlights
-- ✅ Backup private data once — keep it synced forever;
-- 🛡️ Designed for home drives that may go offline;
-- 🔗 Unify scattered data across multiple storage devices via symbolic links;
-- 🖥️ Supports Linux, Windows, and macOS;
+将 `rsdish` 添加到 `PATH`；
 
-## Installation
-
-Add `rsdish` to `PATH`;
-
-## How it works
+## 原理
 [<img src="assets/how_it_works.png" width="40%" alt="How_it_works">](#)
 
-## Configuration
+## 配置
 
 ```toml
 # rsdish.config.toml
@@ -75,9 +78,10 @@ save_level = 0
 # .srcignore
 # The syntax of .srcignore is largely the same as that of .gitignore.
 ```
-## NOTE
 
-⚠️ On Windows, `rsdish link` must be run with administrator privileges, or Developer Mode must be enabled on Windows 10 for proper operation.
+## 注意
+
+⚠️ Windows平台下， `rsdish link` 需要管理员权限，或者在Win10中开启开发者模式才能正常运行。
 
 ## License
 
