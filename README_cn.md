@@ -1,5 +1,3 @@
-<h4 align="right"><a href="README.md">English</a> | 简体中文</h4>
-
 <p align="center">
   <a href="https://github.com/yuc1013/rsdish-cli" target="_blank"><img src="assets/parfait_gpt.png" width="100" /></a>
   <h1 align="center">rsdish</h1>

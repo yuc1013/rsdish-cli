@@ -1,7 +1,7 @@
-<h4 align="right">English | <strong><a href="README_CN.md">简体中文</a></strong></h4>
+<h4 align="right">English | <strong><a href="README_cn.md">简体中文</a></strong></h4>
 
 <p align="center">
-  <a href="https://github.com/yuc1013/rsdish-cli" target="_blank"><img src="assets/parfait_gpt.png" width="100" /></a>
+  <a href="https://github.com/yuc1013/rsdish-cli" target="_blank"><img src="assets/parfait_gpt.png" width="120" /></a>
   <h1 align="center">rsdish</h1>
   <div align="center">
     <a href="LICENSE" target="_blank">
